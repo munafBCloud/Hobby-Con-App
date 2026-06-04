@@ -1,0 +1,90 @@
+import boto3
+import csv
+import io
+import os
+from decimal import Decimal
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("VendorBookings")
+
+EXPORT_KEY = os.environ.get("EXPORT_KEY")
+
+def clean_value(value):
+    if isinstance(value, Decimal):
+        return float(value)
+    return value if value is not None else ""
+
+def lambda_handler(event, context):
+    try:
+        query_params = event.get("queryStringParameters") or {}
+        provided_key = query_params.get("key")
+
+        if not EXPORT_KEY or provided_key != EXPORT_KEY:
+            return {
+                "statusCode": 403,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type": "application/json"
+                },
+                "body": '{"error":"Unauthorized export request"}'
+            }
+
+        response = table.scan()
+        bookings = response.get("Items", [])
+
+        output = io.StringIO()
+
+        fieldnames = [
+            "bookingId",
+            "eventId",
+            "businessName",
+            "contactName",
+            "email",
+            "phone",
+            "category",
+            "package",
+            "status",
+            "paymentStatus",
+            "amountDue",
+            "amountPaid",
+            "tableNumber",
+            "description",
+            "submittedAt"
+        ]
+
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for booking in bookings:
+            if not booking.get("businessName"):
+                continue
+
+            row = {}
+            for field in fieldnames:
+                row[field] = clean_value(booking.get(field, ""))
+
+            writer.writerow(row)
+
+        csv_data = output.getvalue()
+
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Content-Type": "text/csv",
+                "Content-Disposition": "attachment; filename=vendor-bookings.csv"
+            },
+            "body": csv_data
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json"
+            },
+            "body": f'{{"error":"{str(e)}"}}'
+        }
