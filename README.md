@@ -145,8 +145,6 @@ Browser
 
 ## AWS ECS Fargate Deployment
 
-## AWS ECS Fargate Deployment
-
 ### Objective
 
 Deploy the containerized Connect & Collect application to AWS using a fully managed container service.
