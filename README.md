@@ -143,6 +143,76 @@ Browser
 * Frontend containerization
 * AWS serverless integration
 
+## AWS ECS Fargate Deployment
+
+## AWS ECS Fargate Deployment
+
+### Objective
+
+Deploy the containerized Connect & Collect application to AWS using a fully managed container service.
+
+### AWS Services Used
+
+* Amazon ECR
+* Amazon ECS
+* AWS Fargate
+* AWS CloudWatch
+* AWS IAM
+* Amazon VPC
+* Security Groups
+
+### Deployment Workflow
+
+Docker Image
+↓
+Amazon ECR
+↓
+Amazon ECS Task Definition
+↓
+Amazon ECS Service
+↓
+AWS Fargate
+↓
+Public Web Application
+
+### Implementation Steps
+
+1. Built Docker image locally
+2. Created Amazon ECR repository
+3. Configured AWS CLI authentication
+4. Tagged and pushed Docker image to ECR
+5. Created ECS cluster using AWS Fargate
+6. Created ECS task definition
+7. Configured CloudWatch logging
+8. Created ECS service
+9. Configured networking and security groups
+10. Verified public application access
+
+### Troubleshooting Performed
+
+* Resolved AWS CLI installation issues on Ubuntu
+* Configured IAM permissions for ECS deployment
+* Resolved ECS service-linked role issues
+* Resolved CloudFormation stack deployment conflicts
+* Corrected security group inbound access rules
+* Validated ECS task networking and public IP accessibility
+
+### Skills Demonstrated
+
+* Docker
+* Containerization
+* Amazon ECR
+* Amazon ECS
+* AWS Fargate
+* IAM
+* Cloud Networking
+* CloudWatch Logging
+* Security Groups
+* Infrastructure Troubleshooting
+* Linux Administration
+* AWS CLI
+
+
 ### Lessons Learned
 
 * Built a custom Docker image from a Dockerfile
